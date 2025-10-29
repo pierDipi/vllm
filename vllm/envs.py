@@ -197,6 +197,7 @@ if TYPE_CHECKING:
     VLLM_KV_EVENTS_USE_INT_BLOCK_HASHES: bool = True
     VLLM_OBJECT_STORAGE_SHM_BUFFER_NAME: str = "VLLM_OBJECT_STORAGE_SHM_BUFFER"
     VLLM_DEEPEP_BUFFER_SIZE_MB: int = 1024
+    VLLM_DEEPEP_LOW_LATENCY_NUM_QPS_PER_RANK: Optional[int] = None
     VLLM_DBO_COMM_SMS: int = 20
     GPT_OSS_SYSTEM_TOOL_MCP_LABELS: list[str] = []
     VLLM_PATTERN_MATCH_DEBUG: Optional[str] = None
@@ -1441,6 +1442,12 @@ environment_variables: dict[str, Callable[[], Any]] = {
     # The size in MB of the buffers (NVL and RDMA) used by DeepEP
     "VLLM_DEEPEP_BUFFER_SIZE_MB":
     lambda: int(os.getenv("VLLM_DEEPEP_BUFFER_SIZE_MB", "1024")),
+
+    # Override the number of QPs per rank for DeepEP low-latency mode.
+    # If not set, defaults to num_local_experts. Set to a lower value (e.g., 1 or 2)
+    # to reduce UAR resource usage on NICs with limited UAR capacity.
+    "VLLM_DEEPEP_LOW_LATENCY_NUM_QPS_PER_RANK":
+    lambda: maybe_convert_int(os.getenv("VLLM_DEEPEP_LOW_LATENCY_NUM_QPS_PER_RANK", None)),
 
     # The number of SMs to allocate for communication kernels when running DBO
     # the rest of the SMs on the device will be allocated to compute

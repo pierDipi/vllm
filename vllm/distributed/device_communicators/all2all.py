@@ -318,7 +318,7 @@ class DeepEPLLAll2AllManager(DeepEPAll2AllManagerBase):
 
         # Defaults for internode and intranode are taken from DeepEP tests.
         num_nvl_bytes = envs.VLLM_DEEPEP_BUFFER_SIZE_MB * 1024 * 1024
-        num_qps_per_rank = num_local_experts
+        num_qps_per_rank = envs.VLLM_DEEPEP_LOW_LATENCY_NUM_QPS_PER_RANK if envs.VLLM_DEEPEP_LOW_LATENCY_NUM_QPS_PER_RANK is not None else num_local_experts
         num_rdma_bytes = deep_ep.Buffer.get_low_latency_rdma_size_hint(
             num_max_dispatch_tokens_per_rank=max_num_tokens_per_dp_rank,
             hidden=token_hidden_size,
